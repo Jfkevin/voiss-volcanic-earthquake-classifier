@@ -1,1 +1,1 @@
-Place an optional profile image here as assets/profile.jpg. It is used by the About page.
+Optional researcher photo: place it here as profile.jpg. The About page will display it automatically.
