@@ -54,7 +54,7 @@ MODEL_LABELS = {
 ACCEPTED = ["csv","txt","wav","mseed","msd","h5","hdf5"]
 
 st.set_page_config(
-    page_title="VOISS | Volcanic Earthquake Classification",
+    page_title="VECAS | Volcanic Earthquake Classification and Analysis System",
     page_icon="🌋",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -174,7 +174,7 @@ def _live_page_header(title: str, subtitle: str = ""):
     time_text = current_time.strftime("%H:%M:%S WIB")
     st.markdown(
         f'<div class="voiss-header" style="{style}">'
-        f'<div class="voiss-header-inner"><div><h1>VOISS: {html.escape(title)}</h1>'
+        f'<div class="voiss-header-inner"><div><h1>VECAS: {html.escape(title)}</h1>'
         f'<p>{html.escape(subtitle)}</p></div>'
         f'<div class="voiss-time"><div>{date_text}</div><div>{time_text}</div></div></div></div>',
         unsafe_allow_html=True
@@ -433,8 +433,8 @@ def dashboard():
     st.markdown(
         f'<div class="hero-card" style="{bg}"><div class="hero-copy">'
         f'<div class="hero-kicker">Research-based intelligent seismic system</div>'
-        f'<div class="hero-title">VOISS</div>'
-        f'<div class="hero-subtitle">Volcanic Earthquake Classification System</div>'
+        f'<div class="hero-title">VECAS</div>'
+        f'<div class="hero-subtitle">Volcanic Earthquake Classification and Analysis System</div>'
         f'<div class="hero-text">Sistem klasifikasi gempa vulkanik berbasis deep learning yang menggabungkan analisis waveform, spektrogram, dan pendekatan multimodal untuk mengidentifikasi empat jenis kejadian seismik.</div>'
         f'</div></div>',
         unsafe_allow_html=True
@@ -484,7 +484,7 @@ def dashboard():
     left, right = st.columns([2,1])
     with left:
         st.markdown(
-            '<div class="voiss-panel"><b>Alur penggunaan</b><p style="color:#5d7289;font-size:13px">'
+            '<div class="voiss-panel"><b>Alur penggunaan VECAS</b><p style="color:#5d7289;font-size:13px">'
             'Unggah satu rekaman seismik, pilih model yang ingin digunakan, kemudian jalankan klasifikasi. '
             'Hasil prediksi akan dilengkapi visualisasi sinyal dan distribusi skor untuk setiap kelas.</p></div>',
             unsafe_allow_html=True
@@ -726,7 +726,10 @@ def get_profile_photo():
 
 
 def about_page():
-    page_header("About the Researcher", "Research background · Machine learning · Volcanic seismic classification")
+    page_header(
+        "About the Researcher",
+        "Research background · Earth Science · Artificial Intelligence"
+    )
     photo = get_profile_photo()
 
     st.markdown('<div class="section-heading">Meet the Researcher</div>', unsafe_allow_html=True)
@@ -736,38 +739,57 @@ def about_page():
             st.image(photo, use_container_width=True)
         else:
             st.markdown(
-                '<div class="profile-placeholder"><div style="text-align:center"><div style="font-size:60px;font-weight:850">FK</div>'
-                '<div style="font-size:12px;font-weight:700">Researcher Portrait</div></div></div>',
+                '<div class="profile-placeholder"><div style="text-align:center">'
+                '<div style="font-size:60px;font-weight:850">FK</div>'
+                '<div style="font-size:12px;font-weight:700">Researcher Portrait</div>'
+                '</div></div>',
                 unsafe_allow_html=True
             )
     with right:
         st.markdown(
-            '<div class="profile-hero"><div class="hero-kicker">Researcher & Developer</div>'
+            '<div class="profile-hero">'
+            '<div class="hero-kicker">Researcher · Developer · Earth Science Enthusiast</div>'
             '<div class="profile-name">Farrelius Kevin</div>'
-            '<div class="profile-role">S1 Informatika · Universitas Multimedia Nusantara · Data Science & AI</div>'
-            '<div class="profile-bio">Saya memiliki ketertarikan pada pemanfaatan data science dan artificial intelligence untuk mengolah data kompleks menjadi informasi yang lebih mudah dipahami. Melalui VOISS, saya mengembangkan prototipe klasifikasi gempa vulkanik dengan mengeksplorasi pendekatan CNN 1D, CNN 2D, dan multimodal learning.</div>'
+            '<div class="profile-role">Informatics · Universitas Multimedia Nusantara · Data Science & Artificial Intelligence</div>'
+            '<div class="profile-bio">Saya memiliki latar belakang di bidang Informatika dengan ketertarikan pada Data Science, Machine Learning, dan Deep Learning. Di luar pengembangan teknologi, saya juga tertarik pada ilmu kebumian, khususnya fenomena gunung berapi dan aktivitas seismik. Melalui VECAS, saya mengeksplorasi bagaimana pendekatan komputasi dapat dimanfaatkan untuk mempelajari pola pada data seismik.</div>'
             '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">'
             '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Python</span>'
-            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">TensorFlow</span>'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Machine Learning</span>'
             '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Deep Learning</span>'
-            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Streamlit</span>'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Earth Science</span>'
             '</div></div>',
             unsafe_allow_html=True
         )
 
-    st.markdown('<div class="section-heading">About the VOISS Project</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-heading">A Balanced Interest in Technology and Earth Science</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="voiss-panel"><h3 style="color:#173c63;margin:0 0 8px">From Seismic Signals to Intelligent Classification</h3>'
-        '<p style="color:#4a627d;font-size:13px;line-height:1.65">VOISS (Volcanic Earthquake Classification System) merupakan prototipe aplikasi berbasis web yang membawa eksperimen penelitian ke dalam pengalaman interaktif. Sistem ini memproses rekaman seismik melalui waveform dan representasi spektrogram, kemudian membandingkan tiga pendekatan CNN untuk mengenali karakteristik kejadian gempa vulkanik.</p>'
-        '<p style="color:#4a627d;font-size:13px;line-height:1.65">Pengembangan VOISS bertujuan menjembatani proses eksperimen machine learning dengan demonstrasi yang dapat dicoba oleh pengguna, sehingga alur input data, transformasi sinyal, dan hasil klasifikasi dapat diamati dalam satu aplikasi.</p></div>',
+        '<div class="voiss-panel"><h3 style="color:#173c63;margin:0 0 8px">Exploring Earth Science Through Technology</h3>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Ketertarikan saya berada pada pertemuan antara ilmu komputer dan ilmu kebumian. Latar belakang Informatika memberikan kesempatan untuk mempelajari bagaimana data, algoritma, dan kecerdasan buatan dapat digunakan untuk mengolah informasi yang kompleks. Sementara itu, ketertarikan terhadap Earth Science mendorong saya untuk mengenal lebih jauh fenomena alam, terutama aktivitas vulkanik dan sinyal seismik.</p>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Bagi saya, data kebumian tidak hanya berupa kumpulan angka atau rekaman pengukuran. Data tersebut merepresentasikan proses alam yang perlu dipahami melalui pengamatan, analisis, dan pendekatan ilmiah. Inilah alasan saya tertarik mengeksplorasi pemanfaatan teknologi untuk membantu proses analisis tersebut.</p></div>',
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="section-heading">Three Model Approaches</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-heading">Research Motivation</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="voiss-panel"><h3 style="color:#173c63;margin:0 0 8px">Technology for Disaster Risk Reduction</h3>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Aktivitas gunung berapi menghasilkan berbagai sinyal yang dapat diamati melalui instrumen pemantauan seismik. Karakteristik sinyal tersebut menyimpan informasi yang dapat dipelajari untuk memahami jenis kejadian seismik. Saya tertarik mengeksplorasi bagaimana Data Science dan Artificial Intelligence dapat membantu mengolah rekaman tersebut menjadi informasi klasifikasi yang lebih terstruktur.</p>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Dalam konteks yang lebih luas, pengembangan teknologi analisis data kebumian berpotensi mendukung kegiatan penelitian dan pemantauan aktivitas vulkanik. Upaya ini merupakan salah satu bagian dari ekosistem pengurangan risiko bencana, yang tetap memerlukan data berkualitas, validasi ilmiah, pemantauan ahli, serta sistem operasional yang memadai.</p></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="section-heading">Featured Research Project</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="voiss-panel"><div class="hero-kicker">Research & Application Prototype</div>'
+        '<h3 style="color:#173c63;margin:5px 0 8px">VECAS — Volcanic Earthquake Classification and Analysis System</h3>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">VECAS merupakan prototipe aplikasi berbasis web yang dikembangkan untuk mendemonstrasikan klasifikasi gempa vulkanik menggunakan tiga pendekatan Convolutional Neural Network. Sistem memproses waveform dan spektrogram, menampilkan visualisasi sinyal, serta memungkinkan pengguna membandingkan hasil prediksi model.</p>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Penelitian menggunakan dataset gempa vulkanik Gunung Llaima, Chile, dengan empat label kejadian: Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).</p></div>',
+        unsafe_allow_html=True
+    )
+
     model_cards = [
-        ("01", "SeismicNet", "CNN 1D · Waveform", "Mempelajari pola temporal langsung dari urutan amplitudo sinyal seismik.", "#dceeff", "#2376bd"),
-        ("02", "VOISS-Net", "CNN 2D · Spectrogram", "Menganalisis pola waktu-frekuensi dari representasi spektrogram hasil STFT.", "#eee8ff", "#7956b6"),
-        ("03", "Seismic-VOISS-Net", "Multimodal CNN", "Menggabungkan fitur waveform dan spektrogram melalui feature fusion.", "#e2f6e9", "#26845a"),
+        ("01", "SeismicNet", "CNN 1D · Waveform", "Mengekstraksi pola temporal langsung dari urutan amplitudo sinyal seismik.", "#dceeff", "#2376bd"),
+        ("02", "VOISS-Net", "CNN 2D · Spectrogram", "Mempelajari pola waktu-frekuensi dari representasi spektrogram hasil STFT.", "#eee8ff", "#7956b6"),
+        ("03", "Seismic-VOISS-Net Multimodal CNN", "Multimodal · Feature Fusion", "Menggabungkan fitur waveform dan spektrogram melalui dua cabang pemrosesan.", "#e2f6e9", "#26845a"),
     ]
     cols = st.columns(3)
     for col, (num, name, tag, desc, bg, accent) in zip(cols, model_cards):
@@ -787,33 +809,42 @@ def about_page():
     c4.metric("Input Window", "60 seconds")
 
     st.markdown(
-        '<div class="voiss-panel"><b style="color:#173c63">Classification Labels</b>'
+        '<div class="voiss-panel"><b style="color:#173c63">Seismic Event Classes</b>'
         '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">'
         + "".join([f'<span style="background:{COLORS[k]}18;border:1px solid {COLORS[k]}55;color:{COLORS[k]};border-radius:8px;padding:8px 13px;font-size:12px;font-weight:800">{k} · {CLASS_NAMES[k]}</span>' for k in CODES])
         + '</div></div>',
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="section-heading">Research & Technology</div>', unsafe_allow_html=True)
-    left, right = st.columns(2)
-    with left:
-        st.markdown(
-            '<div class="about-highlight"><h4>Research Focus</h4><p>Comparative CNN architectures, waveform analysis, time-frequency representation, multimodal feature fusion, dan explainable AI untuk interpretasi model.</p></div>',
-            unsafe_allow_html=True
-        )
-    with right:
-        st.markdown(
-            '<div class="about-highlight"><h4>Technology Stack</h4><p>Python · TensorFlow / Keras · NumPy · SciPy · Pandas · Plotly · Streamlit · h5py · ObsPy</p></div>',
-            unsafe_allow_html=True
-        )
+    st.markdown('<div class="section-heading">Research Vision</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="voiss-panel"><h3 style="color:#173c63;margin:0 0 8px">Bridging Artificial Intelligence and Earth Science</h3>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">Saya percaya bahwa kolaborasi antara teknologi dan ilmu kebumian membuka peluang untuk memahami fenomena alam melalui pendekatan yang semakin beragam. Ke depan, saya ingin terus mengeksplorasi penerapan Data Science, Machine Learning, Deep Learning, dan pemrosesan sinyal untuk mendukung penelitian geosains serta inovasi yang relevan dengan pengurangan risiko bencana.</p>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.7">VECAS menjadi salah satu langkah pembelajaran dan eksplorasi tersebut—sebuah prototipe penelitian yang menghubungkan pengolahan sinyal seismik dengan demonstrasi model kecerdasan buatan.</p></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="section-heading">Technical Interests</div>', unsafe_allow_html=True)
+    interests = [
+        "Earth Science", "Volcanology", "Seismic Signal Analysis",
+        "Data Science", "Machine Learning", "Deep Learning",
+        "Signal Processing", "Explainable AI"
+    ]
+    st.markdown(
+        '<div class="voiss-panel"><div style="display:flex;gap:9px;flex-wrap:wrap">'
+        + "".join([f'<span style="background:#eaf3fc;border:1px solid #cfe1f3;color:#245d91;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:700">{html.escape(item)}</span>' for item in interests])
+        + '</div></div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown('<div class="section-heading">Explore the Project</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="voiss-panel"><p style="color:#4a627d;font-size:13px">Jelajahi halaman Documentation untuk memahami arsitektur ketiga model, alur preprocessing, serta cara menggunakan aplikasi VOISS. Source code aplikasi tersedia pada repository publik berikut.</p>'
+        '<div class="voiss-panel"><p style="color:#4a627d;font-size:13px;line-height:1.6">Jelajahi halaman Documentation untuk memahami arsitektur ketiga model, tahapan preprocessing, dan cara menggunakan VECAS. Source code aplikasi dan implementasi prototipe tersedia pada repository GitHub berikut.</p>'
         '<a href="https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier" target="_blank" style="display:inline-block;background:#1768b5;color:white!important;text-decoration:none;padding:9px 15px;border-radius:8px;font-weight:700;font-size:12px">⌘ View GitHub Repository ↗</a></div>',
         unsafe_allow_html=True
     )
-    st.caption("VOISS is an academic research and portfolio prototype.")
+    st.caption("VECAS is an academic research and portfolio prototype. It demonstrates seismic classification workflows and is not an operational volcano early-warning system.")
+
 
 
 def flow_step(title, detail="", tone="blue"):
@@ -833,12 +864,12 @@ def pipeline_html(steps, tone="blue"):
 
 
 def documentation_page():
-    page_header("Documentation", "Panduan penggunaan, data & preprocessing, serta dokumentasi arsitektur model VOISS.")
+    page_header("Documentation", "Panduan penggunaan, data & preprocessing, serta dokumentasi arsitektur model VECAS.")
     toc, content = st.columns([0.25, 0.75], gap="medium")
     with toc:
         st.markdown(
             '<div class="doc-toc"><div style="font-size:17px;font-weight:800;color:#153b64;margin:3px 5px 10px">▤ Daftar Isi</div>'
-            '<a href="#about-voiss">1. Tentang VOISS</a>'
+            '<a href="#about-voiss">1. Tentang VECAS</a>'
             '<a href="#architecture">2. Arsitektur Model</a>'
             '<a href="#seismicnet" style="padding-left:22px">• 2.1 SeismicNet (CNN 1D)</a>'
             '<a href="#voissnet" style="padding-left:22px">• 2.2 VOISS-Net (CNN 2D)</a>'
@@ -850,13 +881,13 @@ def documentation_page():
         )
     with content:
         st.markdown(
-            '<div class="doc-section" id="about-voiss"><h3>1. Tentang VOISS</h3>'
+            '<div class="doc-section" id="about-voiss"><h3>1. Tentang VECAS</h3>'
             '<p style="font-size:13px;color:#4d647e;line-height:1.65">VOISS (Volcanic Earthquake Classification System) adalah aplikasi demonstrasi penelitian untuk klasifikasi gempa vulkanik menggunakan tiga arsitektur Convolutional Neural Network (CNN). Sistem mengolah sinyal seismik dalam bentuk waveform dan spektrogram, kemudian menghasilkan prediksi ke dalam empat kategori: Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).</p></div>',
             unsafe_allow_html=True
         )
         st.markdown(
             '<div class="doc-section" id="architecture"><h3>2. Arsitektur Model</h3>'
-            '<p style="font-size:13px;color:#4d647e;line-height:1.6">VOISS mengimplementasikan dua model unimodal dan satu model multimodal. SeismicNet menerima waveform, VOISS-Net menerima spektrogram, sedangkan Seismic-VOISS-Net Multimodal CNN menggabungkan representasi dari kedua cabang.</p></div>',
+            '<p style="font-size:13px;color:#4d647e;line-height:1.6">VECAS mengimplementasikan dua model unimodal dan satu model multimodal. SeismicNet menerima waveform, VOISS-Net menerima spektrogram, sedangkan Seismic-VOISS-Net Multimodal CNN menggabungkan representasi dari kedua cabang.</p></div>',
             unsafe_allow_html=True
         )
 
@@ -1010,13 +1041,13 @@ with st.sidebar:
     if logo_uri:
         st.markdown(
             f'<div class="sidebar-brand"><img src="{logo_uri}"><div>'
-            f'<div class="sidebar-brand-title">VOISS</div>'
-            f'<div class="sidebar-brand-sub">Volcanic Earthquake<br>Classification System</div></div></div>',
+            f'<div class="sidebar-brand-title">VECAS</div>'
+            f'<div class="sidebar-brand-sub">Volcanic Earthquake<br>Classification and Analysis System</div></div></div>',
             unsafe_allow_html=True
         )
     else:
-        st.markdown("## 🌋 VOISS")
-        st.caption("Volcanic Earthquake Classification System")
+        st.markdown("## 🌋 VECAS")
+        st.caption("Volcanic Earthquake Classification and Analysis System")
 
     for item, icon in page_icons.items():
         if st.button(
@@ -1030,7 +1061,7 @@ with st.sidebar:
 
     st.markdown(
         '<div style="margin-top:38px;padding:12px 4px;border-top:1px solid rgba(222,237,250,.16);'
-        'color:#b8cde1;font-size:11px;line-height:1.6">SeismicNet · VOISS-Net<br>Seismic-VOISS-Net Multimodal CNN<br><br>© 2026 Farrelius Kevin</div>',
+        'color:#b8cde1;font-size:11px;line-height:1.6">SeismicNet · VOISS-Net<br>Seismic-VOISS-Net Multimodal CNN<br><br>© 2026 Farrelius Kevin · VECAS</div>',
         unsafe_allow_html=True
     )
 
