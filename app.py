@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import io
+import base64
+import html
 import json
 import gc
 import os
@@ -60,31 +62,114 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-:root { --navy:#10243f; --blue:#1768b5; --pale:#eef5fd; }
-.stApp { background:linear-gradient(180deg,#f5f8fc 0%,#eef3f9 100%); }
-[data-testid="stSidebar"] { background:linear-gradient(180deg,#10243f 0%,#142f50 100%); }
-[data-testid="stSidebar"] * { color:#f5f8fd !important; }
-.voiss-header { background:linear-gradient(100deg,#10243f 0%,#1d4f80 65%,#193a60 100%);
-  color:white;padding:20px 24px;border-radius:16px;margin-bottom:18px; }
-.voiss-header h1 { color:white;margin:0;font-size:27px; }
-.voiss-header p { color:#d9e8f7;margin:6px 0 0 0; }
-.voiss-card { background:white;border:1px solid #dce6f2;border-radius:13px;
-  padding:15px 17px;margin-bottom:12px;box-shadow:0 2px 9px rgba(20,55,95,.045); }
-.voiss-muted { color:#63758c;font-size:12px; }
-div.stButton > button[kind="primary"] { background:#1768c2;border-color:#1768c2; }
+:root { --navy:#10243f; --navy2:#17385d; --blue:#1768b5; --pale:#eef5fd; --line:#dbe6f2; }
+.stApp { background:linear-gradient(180deg,#f7f9fc 0%,#edf3fa 100%); color:#132b49; }
+[data-testid="stHeader"] { background:rgba(0,0,0,0); height:0.25rem; }
+[data-testid="stToolbar"] { right:1rem; }
+[data-testid="stSidebar"] { background:linear-gradient(180deg,#0d2039 0%,#142f50 65%,#10243f 100%); border-right:1px solid #1a3b5f; }
+[data-testid="stSidebar"] > div:first-child { padding-top:1.1rem; }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] span { color:#e7f0fa; }
+[data-testid="stSidebar"] button { border:1px solid transparent !important; border-radius:9px !important; min-height:42px; text-align:left !important; justify-content:flex-start !important; color:#e9f2fb !important; background:transparent !important; }
+[data-testid="stSidebar"] button[kind="primary"] { background:linear-gradient(90deg,#1768b5,#2c78c7) !important; color:white !important; border-color:#3c84d1 !important; box-shadow:0 5px 14px rgba(0,0,0,.16); }
+[data-testid="stSidebar"] button:hover { background:rgba(83,145,203,.22) !important; border-color:rgba(155,197,235,.22) !important; }
+.block-container { max-width:1600px; padding-top:1.05rem; padding-bottom:2rem; }
+.voiss-header { position:relative; overflow:hidden; min-height:112px; border-radius:15px; padding:20px 25px; margin:0 0 16px 0; color:#fff; background-size:cover; background-position:center 54%; box-shadow:0 5px 16px rgba(16,45,79,.12); }
+.voiss-header:after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(12,31,55,.94) 0%,rgba(17,48,79,.80) 49%,rgba(17,48,79,.18) 100%); pointer-events:none; }
+.voiss-header-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:18px; min-height:70px; }
+.voiss-header h1 { color:white; font-size:27px; line-height:1.12; margin:0; font-weight:780; letter-spacing:-.4px; }
+.voiss-header p { color:#e4eef8; font-size:13px; margin:7px 0 0 0; }
+.voiss-time { color:#fff; white-space:nowrap; text-align:right; font-size:13px; font-weight:700; text-shadow:0 1px 5px rgba(0,0,0,.3); }
+.sidebar-brand { display:flex; align-items:center; gap:12px; padding:4px 4px 18px 4px; margin-bottom:18px; border-bottom:1px solid rgba(217,234,249,.16); }
+.sidebar-brand img { width:49px; height:49px; object-fit:contain; }
+.sidebar-brand-title { color:#fff; font-size:24px; line-height:1; font-weight:800; letter-spacing:.5px; }
+.sidebar-brand-sub { color:#bfd1e3; font-size:10px; line-height:1.4; margin-top:5px; }
+.voiss-card { background:#fff; border:1px solid #dce6f2; border-radius:13px; padding:15px 17px; margin-bottom:12px; box-shadow:0 2px 9px rgba(20,55,95,.045); }
+.voiss-muted { color:#63758c; font-size:12px; }
+.voiss-panel { background:#fff; border:1px solid #dce6f2; border-radius:13px; padding:15px 17px; margin-bottom:13px; box-shadow:0 2px 9px rgba(20,55,95,.045); }
+.panel-title { color:#102b4d; font-size:17px; font-weight:780; margin:0 0 12px 0; }
+.hero-card { position:relative; overflow:hidden; border:1px solid #d5e2f1; border-radius:17px; min-height:260px; padding:29px 31px; margin-bottom:17px; background-size:cover; background-position:center 45%; box-shadow:0 4px 15px rgba(16,45,79,.09); }
+.hero-card:before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(248,251,255,.98) 0%,rgba(244,249,255,.92) 42%,rgba(229,240,251,.10) 100%); }
+.hero-copy { position:relative; z-index:1; max-width:560px; }
+.hero-kicker { font-size:12px; font-weight:800; color:#1c68ad; text-transform:uppercase; letter-spacing:1.1px; }
+.hero-title { font-size:38px; color:#123b66; font-weight:850; line-height:1.06; margin:7px 0 8px; }
+.hero-subtitle { color:#274c72; font-size:18px; font-weight:700; margin:0 0 9px; }
+.hero-text { color:#405b78; max-width:540px; font-size:14px; line-height:1.55; }
+.feature-card { background:linear-gradient(180deg,#fff 0%,#f4f8fd 100%); border:1px solid #d8e4f2; border-radius:12px; padding:16px 14px; min-height:130px; height:100%; box-shadow:0 2px 8px rgba(20,55,95,.04); }
+.feature-icon { color:#1768b5; font-size:27px; margin-bottom:7px; }
+.feature-title { color:#132f51; font-size:15px; font-weight:760; margin-bottom:4px; }
+.feature-text { color:#5a6f86; font-size:12px; line-height:1.45; }
+.class-chip { background:#fff; border:1px solid #dbe6f2; border-radius:10px; padding:13px 15px; border-top:4px solid var(--chip-color); }
+.class-chip-code { color:var(--chip-color); font-size:25px; font-weight:850; line-height:1.1; }
+.class-chip-name { color:#213d5d; font-size:12px; font-weight:650; margin-top:5px; }
+.section-heading { font-size:20px; font-weight:800; color:#102b4d; margin:6px 0 12px; }
+.flow-scroll { width:100%; overflow-x:auto; padding:7px 2px 12px; }
+.flow-row { display:flex; flex-wrap:nowrap; align-items:center; gap:7px; min-width:max-content; }
+.flow-step { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; width:112px; min-height:79px; padding:9px 7px; border-radius:9px; border:1px solid #a9c9e7; background:linear-gradient(180deg,#f5faff,#e6f1fc); color:#183d64; box-shadow:0 2px 4px rgba(20,55,95,.04); }
+.flow-step.pink { background:linear-gradient(180deg,#fff7f8,#ffe8eb); border-color:#edb3bc; color:#773b46; }
+.flow-step.purple { background:linear-gradient(180deg,#faf8ff,#eee9fb); border-color:#c7b8ed; color:#4b3d78; }
+.flow-step.green { background:linear-gradient(180deg,#f4fff9,#e2f7eb); border-color:#a9d9bd; color:#285b42; }
+.flow-step b { font-size:11px; line-height:1.25; }
+.flow-step small { font-size:9px; line-height:1.3; margin-top:4px; opacity:.85; }
+.flow-arrow { color:#264b71; font-size:18px; font-weight:800; }
+.architecture-card { background:#fff; border:1px solid #dce6f2; border-radius:13px; overflow:hidden; margin-bottom:15px; box-shadow:0 2px 9px rgba(20,55,95,.045); }
+.architecture-band { padding:10px 16px; font-size:17px; font-weight:800; color:#102e52; }
+.architecture-band.blue { background:linear-gradient(90deg,#d8ebff,#edf6ff); border-bottom:1px solid #c6def4; }
+.architecture-band.purple { background:linear-gradient(90deg,#e9e0ff,#f6f1ff); border-bottom:1px solid #d9c9f4; }
+.architecture-band.green { background:linear-gradient(90deg,#dff7e9,#effcf4); border-bottom:1px solid #c8ead5; }
+.architecture-body { padding:13px 16px 14px; }
+.architecture-description { color:#405a75; font-size:13px; line-height:1.55; }
+.doc-toc { background:linear-gradient(180deg,#fff,#f6f9fd); border:1px solid #dbe6f2; border-radius:13px; padding:14px; position:sticky; top:8px; }
+.doc-toc a { display:block; padding:8px 9px; margin:2px 0; border-radius:7px; color:#21466e !important; text-decoration:none !important; font-size:12px; font-weight:650; }
+.doc-toc a:hover { background:#e9f2fc; }
+.doc-section { background:#fff; border:1px solid #dce6f2; border-radius:13px; padding:17px 18px; margin-bottom:14px; box-shadow:0 2px 9px rgba(20,55,95,.04); scroll-margin-top:15px; }
+.doc-section h3 { color:#143a63; margin:0 0 10px; font-size:18px; }
+.profile-hero { background:linear-gradient(115deg,#fff 0%,#eff6ff 55%,#dceafa 100%); border:1px solid #d7e4f3; border-radius:16px; padding:22px; }
+.profile-name { color:#123b66; font-size:29px; font-weight:850; margin:0; }
+.profile-role { color:#24659f; font-weight:700; margin:5px 0 9px; }
+.profile-bio { color:#425d79; line-height:1.6; font-size:13px; }
+.profile-placeholder { width:100%; min-height:235px; border-radius:14px; background:linear-gradient(145deg,#dbeafa,#eef5fc); display:flex; align-items:center; justify-content:center; color:#4d7095; font-size:52px; border:1px solid #ccdeef; }
+.about-highlight { border:1px solid #dbe6f2; background:#fff; border-radius:12px; padding:15px; min-height:145px; }
+.about-highlight h4 { margin:0 0 6px; color:#173b62; font-size:15px; }
+.about-highlight p { color:#61758c; font-size:12px; line-height:1.5; margin:0; }
+.result-card { background:#fff; border:1px solid #d9e5f2; border-radius:13px; padding:15px; box-shadow:0 2px 8px rgba(20,55,95,.04); height:100%; }
+.result-class { border-radius:8px; background:#fff0ef; color:#a52828; font-size:18px; font-weight:800; padding:10px; text-align:center; margin:8px 0; }
+.agreement-card { background:linear-gradient(90deg,#e8f9ef,#f4fcf7); border:1px solid #c8ebd6; padding:16px 18px; border-radius:12px; }
+div.stButton > button[kind="primary"] { background:#1768c2; border-color:#1768c2; }
+div[data-testid="stFileUploader"] { border:1px dashed #9bb8d6; background:#f8fbff; border-radius:10px; padding:7px; }
+div[data-testid="stRadio"] > div { gap:8px; }
+div[data-testid="stRadio"] label { background:#f4f8fd; border:1px solid #d7e4f2; padding:8px 11px; border-radius:9px; }
+@media (max-width: 800px) {
+ .voiss-header-inner { align-items:flex-start; flex-direction:column; }
+ .voiss-time { text-align:left; }
+ .hero-title { font-size:29px; }
+ .hero-card { min-height:300px; }
+}
 </style>
 """, unsafe_allow_html=True)
-
 def now_wib():
     return datetime.now(ZoneInfo("Asia/Jakarta")).strftime("%d %b %Y · %H:%M:%S WIB")
 
+def asset_data_uri(filename: str) -> str:
+    path = ASSETS / filename
+    if not path.exists():
+        return ""
+    mime = "image/svg+xml" if path.suffix.lower() == ".svg" else "image/png"
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
+
+
 def page_header(title: str, subtitle: str = ""):
+    banner = asset_data_uri("volcano-banner.svg")
+    style = f'background-image:linear-gradient(90deg,rgba(10,30,54,.95) 0%,rgba(15,47,80,.80) 52%,rgba(15,47,80,.20) 100%),url("{banner}");' if banner else 'background:linear-gradient(100deg,#10243f,#1d4f80);'
     st.markdown(
-        f'<div class="voiss-header"><div style="display:flex;justify-content:space-between;gap:16px;align-items:center;">'
-        f'<div><h1>VOISS · {title}</h1><p>{subtitle}</p></div>'
-        f'<div style="text-align:right;white-space:nowrap;font-weight:650">{now_wib()}</div></div></div>',
+        f'<div class="voiss-header" style="{style}">'
+        f'<div class="voiss-header-inner"><div><h1>VOISS: {html.escape(title)}</h1>'
+        f'<p>{html.escape(subtitle)}</p></div>'
+        f'<div class="voiss-time">{now_wib()}</div></div></div>',
         unsafe_allow_html=True
     )
+
 
 def model_status():
     missing = []
@@ -302,254 +387,353 @@ def plot_signals(x):
         st.plotly_chart(fig,use_container_width=True)
 
 def render_result_cards(results):
-    cols=st.columns(len(results))
-    for col,r in zip(cols,results):
-        code=r["predicted_code"]
+    cols = st.columns(len(results))
+    for col, result in zip(cols, results):
+        code = result["predicted_code"]
+        color = COLORS[code]
         with col:
-            st.markdown('<div class="voiss-card">',unsafe_allow_html=True)
-            st.subheader(r["model"])
-            st.markdown(f'<div style="background:#fff0f0;color:#a32323;padding:9px;border-radius:8px;text-align:center;font-size:19px;font-weight:800;">{code} · {r["predicted_class"]}</div>',unsafe_allow_html=True)
-            st.metric("Confidence (Softmax score)",f'{r["confidence"]*100:.2f}%')
+            st.markdown(
+                f'<div class="result-card"><div style="font-size:14px;font-weight:800;color:#1a3d64">{html.escape(result["model"])}</div>'
+                f'<div class="result-class">{code} · {html.escape(result["predicted_class"])}</div></div>',
+                unsafe_allow_html=True
+            )
+            st.metric("Confidence", f'{result["confidence"]*100:.2f}%')
             st.markdown("**Class Probability**")
-            for c in CODES:
-                score=r["probabilities"][c]
-                st.write(f"{c} · {CLASS_NAMES[c]} — {score*100:.2f}%")
-                st.progress(float(np.clip(score,0,1)))
-            st.markdown("</div>",unsafe_allow_html=True)
+            for label in CODES:
+                score = result["probabilities"][label]
+                st.markdown(
+                    f'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:5px">'
+                    f'<span>{label} · {CLASS_NAMES[label]}</span><b>{score*100:.2f}%</b></div>',
+                    unsafe_allow_html=True
+                )
+                st.progress(float(np.clip(score, 0, 1)), text=None)
+
 
 def dashboard():
-    page_header("Volcanic Earthquake Classification","SeismicNet (CNN 1D) · VOISS-Net (CNN 2D) · Seismic-VOISS-Net Multimodal CNN")
-    st.markdown('<div class="voiss-card" style="background:linear-gradient(110deg,#fff 0%,#e7f1fc 58%,#d8e8f8 100%);"><h1 style="color:#153c67;margin:0;">VOISS</h1><h3 style="color:#244b76;margin:2px 0 8px;">Volcanic Earthquake Classification System</h3><p style="color:#425b76;">Sistem demonstrasi klasifikasi sinyal gempa vulkanik berbasis deep learning menggunakan waveform, spektrogram, dan pendekatan multimodal.</p></div>',unsafe_allow_html=True)
-    a,b,c=st.columns(3)
-    a.metric("Arsitektur CNN","3")
-    b.metric("Kelas keluaran","4")
-    c.metric("Input model","100 Hz · 60 detik")
-    st.markdown("### Empat kelas klasifikasi")
-    cols=st.columns(4)
-    for col,code in zip(cols,CODES):
-        col.markdown(f'<div class="voiss-card" style="border-top:4px solid {COLORS[code]};"><h2 style="color:{COLORS[code]};margin:0;">{code}</h2><b>{CLASS_NAMES[code]}</b></div>',unsafe_allow_html=True)
-    missing=model_status()
+    page_header(
+        "Volcanic Earthquake Classification",
+        "SeismicNet (CNN 1D)  |  VOISS-Net (CNN 2D)  |  Seismic-VOISS-Net Multimodal CNN"
+    )
+    banner = asset_data_uri("volcano-banner.svg")
+    bg = f'background-image:linear-gradient(90deg,rgba(250,252,255,.98) 0%,rgba(246,250,255,.91) 47%,rgba(236,245,254,.10) 100%),url("{banner}");' if banner else 'background:linear-gradient(110deg,#fff,#d9eafb);'
+    st.markdown(
+        f'<div class="hero-card" style="{bg}"><div class="hero-copy">'
+        f'<div class="hero-kicker">Research-based intelligent seismic system</div>'
+        f'<div class="hero-title">VOISS</div>'
+        f'<div class="hero-subtitle">Volcanic Earthquake Classification System</div>'
+        f'<div class="hero-text">Sistem klasifikasi gempa vulkanik berbasis deep learning yang menggabungkan analisis waveform, spektrogram, dan pendekatan multimodal untuk mengidentifikasi empat jenis kejadian seismik.</div>'
+        f'</div></div>',
+        unsafe_allow_html=True
+    )
+
+    features = [
+        ("〽️","Klasifikasi Otomatis","Mengidentifikasi empat kelas: LP, TC, TR, dan VT."),
+        ("▱","Tiga Model CNN","SeismicNet, VOISS-Net, dan Seismic-VOISS-Net Multimodal CNN."),
+        ("▥","Visualisasi Sinyal","Menampilkan waveform dan spektrogram hasil preprocessing."),
+        ("⌘","Berbasis Penelitian","Menggunakan model dan konfigurasi dari eksperimen penelitian."),
+    ]
+    cols = st.columns(4)
+    for col, (icon, title, desc) in zip(cols, features):
+        with col:
+            st.markdown(
+                f'<div class="feature-card"><div class="feature-icon">{icon}</div>'
+                f'<div class="feature-title">{title}</div><div class="feature-text">{desc}</div></div>',
+                unsafe_allow_html=True
+            )
+
+    st.markdown('<div class="section-heading">Empat Kelas Klasifikasi</div>', unsafe_allow_html=True)
+    cols = st.columns(4)
+    for col, code in zip(cols, CODES):
+        col.markdown(
+            f'<div class="class-chip" style="--chip-color:{COLORS[code]}">'
+            f'<div class="class-chip-code">{code}</div><div class="class-chip-name">{CLASS_NAMES[code]}</div></div>',
+            unsafe_allow_html=True
+        )
+
+    a, b, c = st.columns(3)
+    a.metric("Arsitektur CNN", "3")
+    b.metric("Kelas keluaran", "4")
+    c.metric("Input standar", "100 Hz · 60 detik")
+
+    missing = model_status()
     if missing:
-        st.warning("Model belum seluruhnya tersedia di folder artifacts.")
+        st.warning("Ada artefak model yang belum siap.")
         st.code("\n".join(missing))
     else:
-        st.success("Ketiga model ditemukan. Aplikasi siap untuk inference.")
-    st.info("Buka Classification untuk mengunggah file seismik dan menjalankan prediksi.")
+        st.markdown(
+            '<div class="agreement-card"><b style="color:#157347">✓ Sistem siap untuk inference</b>'
+            '<div style="color:#476b59;font-size:12px;margin-top:4px">Ketiga model ditemukan pada direktori artefak.</div></div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown('<div class="section-heading">Mulai Analisis</div>', unsafe_allow_html=True)
+    left, right = st.columns([2,1])
+    with left:
+        st.markdown(
+            '<div class="voiss-panel"><b>Alur penggunaan</b><p style="color:#5d7289;font-size:13px">'
+            'Unggah satu rekaman seismik, pilih model yang ingin digunakan, kemudian jalankan klasifikasi. '
+            'Hasil prediksi akan dilengkapi visualisasi sinyal dan distribusi skor untuk setiap kelas.</p></div>',
+            unsafe_allow_html=True
+        )
+    with right:
+        if st.button("Mulai Klasifikasi  →", type="primary", use_container_width=True):
+            st.session_state["active_page"] = "Classification"
+            st.rerun()
+
 
 def classification():
-    page_header("Classification","Unggah satu rekaman, pilih model, dan jalankan klasifikasi.")
-    missing=model_status()
+    page_header(
+        "Volcanic Earthquake Classification",
+        "Input seismic data  |  Signal visualization  |  Classification result"
+    )
+    missing = model_status()
     if missing:
-        st.error("Artefak model belum lengkap. Tiga file .keras harus berada di folder artifacts.")
+        st.error("Artefak model belum lengkap. Periksa folder artifacts.")
         st.code("\n".join(missing))
-        st.stop()
-    st.markdown("### 1. Input Seismic Data")
-    up=st.file_uploader("Upload seismic file",type=ACCEPTED,help="CSV, TXT, WAV, MiniSEED, H5, HDF5. Satu prediksi menggunakan segmen 60 detik.")
-    if up is None:
-        st.info("Upload satu waveform untuk memulai. Input model: 6.000 sampel, 100 Hz, satu channel.")
         return
-    raw=up.getvalue()
-    digest=hashlib.sha256(raw).hexdigest()
-    ext=Path(up.name).suffix.lower().lstrip(".")
-    dataset=None
-    event=0
-    channel=0
-    trace=0
-    manual_fs=100.0
-    if ext in {"csv","txt","h5","hdf5"}:
-        manual_fs=st.number_input("Sampling rate (Hz)",min_value=0.1,max_value=10000.0,value=100.0,step=1.0)
-    if ext in {"h5","hdf5"}:
+
+    st.markdown('<div class="section-heading">1. Input Seismic Data</div>', unsafe_allow_html=True)
+    up = st.file_uploader(
+        "Upload Seismic File",
+        type=ACCEPTED,
+        help="Format: CSV, TXT, WAV, MiniSEED, H5, dan HDF5. Model menggunakan satu segmen berdurasi 60 detik."
+    )
+    if up is None:
+        st.info("Drag and drop file seismik di sini atau klik Browse files. Input model: 100 Hz, 6.000 sampel, 60 detik.")
+        return
+
+    raw = up.getvalue()
+    digest = hashlib.sha256(raw).hexdigest()
+    ext = Path(up.name).suffix.lower().lstrip(".")
+    dataset = None
+    event = 0
+    channel = 0
+    trace = 0
+    manual_fs = 100.0
+
+    if ext in {"csv", "txt", "h5", "hdf5"}:
+        manual_fs = st.number_input("Sampling rate (Hz)", min_value=0.1, max_value=10000.0, value=100.0, step=1.0)
+
+    if ext in {"h5", "hdf5"}:
         try:
-            names=get_hdf5_datasets(raw)
-            if not names: st.error("Tidak ditemukan dataset numerik pada HDF5."); return
-            dataset=st.selectbox("Dataset HDF5",list(names))
-            shape=names[dataset]
-            if len(shape)==3:
-                event=st.number_input("Indeks event",0,max(0,shape[0]-1),0)
-                channel=st.number_input("Indeks channel",0,max(0,shape[2]-1),0)
-            elif len(shape)==2 and shape[1]==6000 and shape[0]!=6000:
-                event=st.number_input("Indeks event",0,max(0,shape[0]-1),0)
-            elif len(shape)==2:
-                channel=st.number_input("Indeks channel",0,max(0,shape[1]-1),0)
-        except Exception as e: st.error(f"Gagal membaca struktur HDF5: {e}"); return
-    if ext=="wav":
+            names = get_hdf5_datasets(raw)
+            if not names:
+                st.error("Tidak ditemukan dataset numerik pada HDF5.")
+                return
+            dataset = st.selectbox("Pilih dataset HDF5", list(names))
+            shape = names[dataset]
+            if len(shape) == 3:
+                event = st.number_input("Indeks event", 0, max(0, shape[0]-1), 0)
+                channel = st.number_input("Indeks channel", 0, max(0, shape[2]-1), 0)
+            elif len(shape) == 2 and shape[1] == N_SAMPLES and shape[0] != N_SAMPLES:
+                event = st.number_input("Indeks event", 0, max(0, shape[0]-1), 0)
+            elif len(shape) == 2:
+                channel = st.number_input("Indeks channel", 0, max(0, shape[1]-1), 0)
+        except Exception as exc:
+            st.error(f"Gagal membaca struktur HDF5: {exc}")
+            return
+
+    if ext == "wav":
         try:
-            sr0,arr=wavfile.read(io.BytesIO(raw))
-            if arr.ndim==2: channel=st.selectbox("Channel WAV",list(range(arr.shape[1])))
+            sr0, array = wavfile.read(io.BytesIO(raw))
+            if array.ndim == 2:
+                channel = st.selectbox("Pilih channel WAV", list(range(array.shape[1])))
             st.caption(f"Sampling rate dari WAV: {sr0} Hz")
-        except Exception as e: st.error(f"WAV tidak valid: {e}"); return
-    if ext in {"mseed","msd"}:
+        except Exception as exc:
+            st.error(f"WAV tidak valid: {exc}")
+            return
+
+    if ext in {"mseed", "msd"}:
         try:
             from obspy import read
-            stream=read(io.BytesIO(raw))
-            trace=st.selectbox("Trace MiniSEED",list(range(len(stream))))
-        except Exception as e: st.error(f"MiniSEED tidak valid: {e}"); return
+            stream = read(io.BytesIO(raw))
+            trace = st.selectbox("Pilih trace MiniSEED", list(range(len(stream))))
+        except Exception as exc:
+            st.error(f"MiniSEED tidak valid: {exc}")
+            return
+
     try:
-        preview,preview_sr,_=read_signal(raw,up.name,manual_fs,int(channel),int(event),int(trace),dataset)
-        duration=len(preview)/preview_sr
-        st.caption(f"Durasi terdeteksi: {duration:.2f} detik · {len(preview):,} sampel · {preview_sr:g} Hz")
-        start=0.0
-        if duration>60:
-            start=st.slider("Awal segmen 60 detik (detik)",0.0,float(duration-60),0.0,1.0)
-    except Exception as e:
-        st.error(f"File tidak dapat dibaca: {e}")
+        preview, preview_sr, file_meta = read_signal(raw, up.name, manual_fs, int(channel), int(event), int(trace), dataset)
+        duration = len(preview) / preview_sr
+        st.caption(f"File terbaca: {len(preview):,} sampel · {preview_sr:g} Hz · durasi {duration:.2f} detik")
+        start = 0.0
+        if duration > 60:
+            start = st.slider("Pilih awal segmen 60 detik", 0.0, float(duration-60), 0.0, 1.0)
+        elif duration < 60:
+            st.warning("Durasi rekaman kurang dari 60 detik. Model membutuhkan minimal 60 detik.")
+    except Exception as exc:
+        st.error(f"File tidak dapat dibaca: {exc}")
         return
-    st.markdown("### 2. Model Selection")
-    choice=st.radio("Pilih pendekatan",["SeismicNet (CNN 1D)","VOISS-Net (CNN 2D)","Seismic-VOISS-Net Multimodal CNN","Compare All Models"],horizontal=True)
-    selected={
-        "SeismicNet (CNN 1D)":["SeismicNet"],
-        "VOISS-Net (CNN 2D)":["VOISS-Net"],
-        "Seismic-VOISS-Net Multimodal CNN":["Seismic-VOISS-Net Multimodal CNN"],
-        "Compare All Models":list(MODEL_FILES),
+
+    st.markdown('<div class="section-heading">2. Model Selection</div>', unsafe_allow_html=True)
+    choice = st.radio(
+        "Pilih model",
+        ["SeismicNet (CNN 1D)", "VOISS-Net (CNN 2D)", "Seismic-VOISS-Net Multimodal CNN", "Compare All Models"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    selected = {
+        "SeismicNet (CNN 1D)": ["SeismicNet"],
+        "VOISS-Net (CNN 2D)": ["VOISS-Net"],
+        "Seismic-VOISS-Net Multimodal CNN": ["Seismic-VOISS-Net Multimodal CNN"],
+        "Compare All Models": list(MODEL_FILES),
     }[choice]
-    if st.button("▶ Run Classification",type="primary",use_container_width=True):
+
+    if st.button("▶  Run Classification", type="primary", use_container_width=True):
         try:
-            x,meta=make_segment(preview,preview_sr,float(start))
+            x, segment_meta = make_segment(preview, preview_sr, float(start))
             with st.spinner("Model sedang melakukan klasifikasi..."):
-                results=[]
-                for name in selected:
-                    results.append(predict_model(name,x))
-            agreement=agreement_for(results)
-            run=now_wib()
-            row={"run_at":run,"file_name":up.name,"mode":choice,"results":results,"agreement":agreement,
-                 "duration":60.0,"sample_rate":100,"samples":6000}
+                results = [predict_model(name, x) for name in selected]
+            agreement = agreement_for(results)
+            run = now_wib()
+            row = {
+                "run_at": run, "file_name": up.name, "mode": choice,
+                "results": results, "agreement": agreement,
+                "duration": 60.0, "sample_rate": 100, "samples": 6000,
+                "source_duration": duration, "source_fs": preview_sr,
+                "segment_start": float(start), "file_meta": file_meta,
+            }
             save_history(row)
-            st.session_state["last_prediction"]={"hash":digest,"waveform":x,"row":row}
+            st.session_state["last_prediction"] = {"hash": digest, "waveform": x, "row": row}
             st.success("Klasifikasi selesai.")
-        except Exception as e:
-            st.error(f"Klasifikasi gagal: {e}")
-            st.exception(e)
-    last=st.session_state.get("last_prediction")
-    if last and last["hash"]==digest:
-        row=last["row"]
-        st.markdown("### 3. Signal Visualization")
+        except Exception as exc:
+            st.error(f"Klasifikasi gagal: {exc}")
+            st.exception(exc)
+
+    last = st.session_state.get("last_prediction")
+    if last and last["hash"] == digest:
+        row = last["row"]
+        st.markdown('<div class="section-heading">3. Signal Visualization</div>', unsafe_allow_html=True)
         plot_signals(last["waveform"])
-        st.markdown("### 4. Classification Result")
+
+        st.markdown('<div class="section-heading">4. Classification Result</div>', unsafe_allow_html=True)
         render_result_cards(row["results"])
-        st.markdown("### 5. Model Agreement")
+
+        st.markdown('<div class="section-heading">5. Model Agreement</div>', unsafe_allow_html=True)
         if row["agreement"].get("available"):
-            ag=row["agreement"]
+            ag = row["agreement"]
             if ag.get("consensus_code"):
-                st.success(f'{ag["message"]} Consensus: {ag["consensus_code"]} — {CLASS_NAMES[ag["consensus_code"]]}')
-            else: st.warning(ag["message"])
-            st.metric("Model Agreement",f'{ag["agreement_count"]}/{ag["model_count"]} models')
+                st.markdown(
+                    f'<div class="agreement-card"><b style="color:#167348">✓ Model Agreement</b>'
+                    f'<div style="color:#315b47;margin-top:4px">{html.escape(ag["message"])} '
+                    f'Final prediction: <b>{ag["consensus_code"]} · {CLASS_NAMES[ag["consensus_code"]]}</b></div></div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.warning(ag["message"])
+            st.metric("Model Agreement", f'{ag["agreement_count"]}/{ag["model_count"]} models')
         else:
-            st.info("Model Agreement tersedia pada Compare All Models.")
-        st.markdown("### 6. Event Information")
-        st.dataframe(pd.DataFrame([
-            {"Informasi":"File Name","Nilai":row["file_name"]},
-            {"Informasi":"Duration","Nilai":"60.00 seconds"},
-            {"Informasi":"Sampling Rate","Nilai":"100 Hz"},
-            {"Informasi":"Number of Samples","Nilai":"6,000"},
-            {"Informasi":"Analysis Time","Nilai":row["run_at"]},
-        ]),use_container_width=True,hide_index=True)
-        st.caption("Softmax scores are model scores and have not been demonstrated to be calibrated probabilities.")
+            st.info("Model Agreement tersedia pada mode Compare All Models.")
+
+        st.markdown('<div class="section-heading">6. Event Information</div>', unsafe_allow_html=True)
+        meta_left, meta_right = st.columns(2)
+        event_rows = [
+            ("File Name", row["file_name"]),
+            ("Original Duration", f'{row.get("source_duration",60):.2f} seconds'),
+            ("Input Sampling Rate", f'{row.get("source_fs",100):g} Hz'),
+            ("Processed Duration", "60.00 seconds"),
+            ("Processed Sampling Rate", "100 Hz"),
+            ("Number of Samples", "6,000"),
+            ("Segment Start", f'{row.get("segment_start",0):.2f} seconds'),
+            ("Analysis Time", row["run_at"]),
+        ]
+        with meta_left:
+            st.dataframe(pd.DataFrame(event_rows[:4], columns=["Information","Value"]), use_container_width=True, hide_index=True)
+        with meta_right:
+            st.dataframe(pd.DataFrame(event_rows[4:], columns=["Information","Value"]), use_container_width=True, hide_index=True)
+        st.caption("Confidence ditampilkan sebagai skor Softmax tertinggi. Skor ini belum tentu merupakan probabilitas yang terkalibrasi.")
+
 
 def history_page():
-    page_header("Prediction History","Riwayat prediksi yang tersimpan sementara pada sesi browser ini.")
-    hist=ensure_history()
+    page_header("Prediction History", "Riwayat klasifikasi yang dilakukan pada sesi browser ini.")
+    hist = ensure_history()
     if not hist:
-        st.info("Belum ada prediksi pada sesi ini.")
+        st.markdown(
+            '<div class="voiss-panel"><h3 style="color:#173d66">Belum ada riwayat prediksi</h3>'
+            '<p style="color:#64788e;font-size:13px">Hasil klasifikasi akan muncul di sini setelah Anda menjalankan analisis.</p></div>',
+            unsafe_allow_html=True
+        )
         return
-    df=pd.DataFrame([{"No":i+1,"Tanggal & Waktu":r["run_at"],"Nama File":r["file_name"],"Model":r["mode"],
-                      "Prediksi":", ".join(x["predicted_code"] for x in r["results"]),
-                      "Agreement":r["agreement"].get("message","N/A")} for i,r in enumerate(hist)])
-    q=st.text_input("Cari nama file")
-    if q: df=df[df["Nama File"].str.contains(q,case=False,na=False)]
-    st.dataframe(df,use_container_width=True,hide_index=True)
-    st.download_button("Export History CSV",df.to_csv(index=False).encode("utf-8-sig"),"voiss_history.csv","text/csv")
-    with st.expander("Detail prediksi"):
-        for r in hist:
-            st.markdown(f"**{r['run_at']} · {r['file_name']} · {r['mode']}**")
-            for p in r["results"]:
-                st.write(p["model"],"—",p["predicted_code"],f'{p["confidence"]*100:.2f}%')
-    if st.button("Hapus history"):
-        st.session_state["voiss_history"]=[]
-        st.rerun()
-    st.caption("History hanya berlaku di sesi browser saat ini. Riwayat permanen membutuhkan database eksternal.")
 
-def about_page():
-    page_header("About the Researcher","Profil peneliti, latar belakang, dan identitas proyek VOISS.")
-    a,b=st.columns([1,2])
-    with a:
-        photo=ASSETS/"profile.jpg"
-        if photo.exists(): st.image(str(photo),use_container_width=True)
-        else: st.markdown('<div class="voiss-card" style="height:230px;display:grid;place-items:center;font-size:52px;">👤<br><small style="font-size:13px">Foto profil dapat ditambahkan</small></div>',unsafe_allow_html=True)
-    with b:
-        st.title("Farrelius Kevin")
-        st.write("Informatics · Data Science · Machine Learning · Deep Learning")
-        st.write("VOISS dikembangkan sebagai proyek penelitian dan portofolio untuk mengeksplorasi CNN 1D, CNN 2D, dan multimodal feature fusion pada klasifikasi gempa vulkanik.")
-        st.write("Dataset: Llaima volcano seismic dataset, Chile.")
-    st.markdown("### Tentang penelitian")
-    st.write("SeismicNet memproses waveform, VOISS-Net memproses spektrogram, dan Seismic-VOISS-Net Multimodal CNN menggabungkan kedua representasi untuk mengklasifikasikan Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).")
-    st.info("Foto profil dan tautan email, LinkedIn, serta GitHub dapat ditambahkan pada folder assets dan bagian halaman About.")
+    top1, top2, top3 = st.columns([2,1,1])
+    with top1:
+        query = st.text_input("Cari nama file", placeholder="Cari berdasarkan nama file...")
+    with top2:
+        model_filter = st.selectbox("Model", ["Semua Model"] + sorted({r["mode"] for r in hist}))
+    with top3:
+        if st.button("Clear History", use_container_width=True):
+            st.session_state["voiss_history"] = []
+            st.rerun()
 
-def documentation_page():
-    page_header("Documentation","Arsitektur model, input, preprocessing, evaluasi, dan batasan VOISS.")
-    st.markdown("## Arsitektur tiga model")
-    with st.container(border=True):
-        st.subheader("1. SeismicNet (CNN 1D)")
-        st.write("Model unimodal yang memproses waveform berdimensi satu untuk mengekstraksi pola temporal sinyal.")
-        st.code("""Waveform (6000, 1)
-→ Conv1D 32, kernel 64, stride 2 + ReLU
-→ MaxPool1D 4, stride 4 → Dropout 0.15
-→ Conv1D 64, kernel 32, stride 2 + ReLU
-→ MaxPool1D 4, stride 4 → Dropout 0.35
-→ Conv1D 128, kernel 16, stride 2 + ReLU
-→ MaxPool1D 4, stride 4
-→ Conv1D 256, kernel 8, stride 2 + ReLU
-→ Conv1D 1401, kernel 16, stride 2 + ReLU
-→ Flatten → Dense 1500 + ReLU → Dropout 0.75
-→ Dense 4 + Softmax""")
-        st.metric("Total parameters","12,513,181")
-    with st.container(border=True):
-        st.subheader("2. VOISS-Net (CNN 2D)")
-        st.write("Model unimodal yang memproses spektrogram hasil STFT untuk mengekstraksi pola waktu-frekuensi.")
-        st.code("""Spectrogram (96, 60, 1)
-→ Conv2D 32, kernel 3×3 + ReLU → MaxPool2D 3×3
-→ Conv2D 64, kernel 3×3 + ReLU → MaxPool2D 3×3
-→ Conv2D 128, kernel 3×3 + ReLU → MaxPool2D 3×3
-→ Flatten → Dropout 0.2
-→ Dense 128 + ReLU → Dropout 0.5
-→ Dense 64 + ReLU → Dropout 0.5
-→ Dense 4 + Softmax""")
-        st.metric("Total parameters","199,620")
-    with st.container(border=True):
-        st.subheader("3. Seismic-VOISS-Net Multimodal CNN")
-        st.write("Model multimodal dengan cabang SeismicNet untuk waveform dan cabang VOISS-Net untuk spektrogram. Kedua vektor fitur digabungkan melalui Concatenate sebelum classification head.")
-        a,b=st.columns(2)
-        a.markdown("**Cabang waveform**")
-        a.code("Input (6000,1) → Conv1D 32/64/128/256/1401 → Pooling → Flatten → Dense 1500 → Dropout 0.75")
-        b.markdown("**Cabang spektrogram**")
-        b.code("Input (96,60,1) → Conv2D 32/64/128 → Pooling → Flatten → Dense 128 → Dense 64")
-        st.markdown("**Feature fusion dan output**")
-        st.code("Concatenate → Dense 256 + ReLU → Dropout 0.5 → Dense 4 + Softmax")
-        st.metric("Total parameters","13,108,205")
-    st.markdown("## Input dan preprocessing")
-    c1,c2,c3=st.columns(3)
-    c1.metric("Sampling rate","100 Hz")
-    c2.metric("Durasi","60 detik")
-    c3.metric("Sampel","6.000")
-    st.write("Spectrogram: mean removal → Tukey window alpha=0.1 → STFT Hann (nperseg=1000, noverlap=900) → dB → crop 0.5–10 Hz → 60 time columns → per-spectrogram Min-Max [0,1].")
-    st.write("Input tanpa batch: waveform (6000,1), spectrogram (96,60,1). Multimodal memerlukan kedua input dari event yang sama.")
-    st.markdown("## Label klasifikasi")
-    for code in CODES: st.markdown(f'<div class="voiss-card" style="border-left:5px solid {COLORS[code]};"><b>{code}</b> — {CLASS_NAMES[code]}</div>',unsafe_allow_html=True)
-    st.markdown("## Evaluasi dan keterbatasan")
-    st.write("Metrik utama penelitian: Macro F1-score, Macro Precision, dan Macro Recall. Accuracy tetap ditampilkan sebagai metrik pelengkap. Evaluasi menggunakan prediksi out-of-fold dari Stratified 5-Fold Cross Validation.")
-    st.warning("Skor Softmax belum terbukti terkalibrasi. Model dikembangkan menggunakan dataset Llaima; generalisasi ke gunung, stasiun, instrumen, atau kondisi akuisisi lain memerlukan validasi eksternal. VOISS adalah prototipe riset, bukan pengganti interpretasi ahli seismologi.")
+    rows = []
+    for i, record in enumerate(hist, start=1):
+        predicted = ", ".join(item["predicted_code"] for item in record["results"])
+        rows.append({
+            "No": i,
+            "Date & Time": record["run_at"],
+            "File Name": record["file_name"],
+            "Model": record["mode"],
+            "Prediction": predicted,
+            "Confidence": max(item["confidence"] for item in record["results"]),
+            "Agreement": record["agreement"].get("message", "—"),
+        })
+    df = pd.DataFrame(rows)
+    if query:
+        df = df[df["File Name"].str.contains(query, case=False, na=False)]
+    if model_filter != "Semua Model":
+        df = df[df["Model"] == model_filter]
 
-# Sidebar and navigation
+    display = df.copy()
+    if not display.empty:
+        display["Confidence"] = display["Confidence"].map(lambda value: f"{value*100:.2f}%")
+    st.dataframe(display, use_container_width=True, hide_index=True)
+    if not df.empty:
+        st.download_button("↓ Export CSV", df.to_csv(index=False).encode("utf-8-sig"), "voiss_prediction_history.c# Sidebar navigation
+st.session_state.setdefault("active_page", "Dashboard")
+page_icons = {
+    "Dashboard": "⌂",
+    "Classification": "▦",
+    "History": "◷",
+    "About": "ⓘ",
+    "Documentation": "▤",
+}
 with st.sidebar:
-    st.markdown("## 🌋 VOISS")
-    st.caption("Volcanic Earthquake Classification System")
-    st.markdown("---")
-    page=st.radio("Navigasi",["Dashboard","Classification","History","About","Documentation"],label_visibility="collapsed")
-    st.markdown("---")
-    st.caption("SeismicNet · VOISS-Net · Multimodal CNN")
-    st.caption("© 2026 Farrelius Kevin")
+    logo_uri = asset_data_uri("voiss-logo.svg")
+    if logo_uri:
+        st.markdown(
+            f'<div class="sidebar-brand"><img src="{logo_uri}"><div>'
+            f'<div class="sidebar-brand-title">VOISS</div>'
+            f'<div class="sidebar-brand-sub">Volcanic Earthquake<br>Classification System</div></div></div>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown("## 🌋 VOISS")
+        st.caption("Volcanic Earthquake Classification System")
 
-if page=="Dashboard": dashboard()
-elif page=="Classification": classification()
-elif page=="History": history_page()
-elif page=="About": about_page()
-else: documentation_page()
+    for item, icon in page_icons.items():
+        if st.button(
+            f"{icon}   {item}",
+            key=f"nav_{item}",
+            type="primary" if st.session_state["active_page"] == item else "secondary",
+            use_container_width=True
+        ):
+            st.session_state["active_page"] = item
+            st.rerun()
+
+    st.markdown(
+        '<div style="margin-top:38px;padding:12px 4px;border-top:1px solid rgba(222,237,250,.16);'
+        'color:#b8cde1;font-size:11px;line-height:1.6">SeismicNet · VOISS-Net<br>Seismic-VOISS-Net Multimodal CNN<br><br>© 2026 Farrelius Kevin</div>',
+        unsafe_allow_html=True
+    )
+
+page = st.session_state["active_page"]
+if page == "Dashboard":
+    dashboard()
+elif page == "Classification":
+    classification()
+elif page == "History":
+    history_page()
+elif page == "About":
+    about_page()
+else:
+    documentation_page()
