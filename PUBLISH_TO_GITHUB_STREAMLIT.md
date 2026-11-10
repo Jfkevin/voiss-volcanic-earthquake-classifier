@@ -1,69 +1,44 @@
-# Panduan VOISS: unggah model ke GitHub lalu deploy ke Streamlit Cloud
+# Publish VECAS to Streamlit Community Cloud
 
-Repository yang sudah disiapkan:
+Application name: **VECAS — Volcanic Earthquake Classification and Analysis System**
+
+Tagline: **Intelligent Seismic Analysis for Volcanic Earthquake Classification**
+
+Repository:
 https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier
 
-## Status saat ini
+## Current deployment
 
-- Source code Streamlit, dependencies, metadata, konfigurasi, dan dokumentasi sudah berada di repository.
-- Tiga file .keras sudah memiliki pointer Git LFS di folder artifacts.
-- Objek biner Git LFS belum dikirim. Langkah satu kali ini harus dijalankan dari komputer pemilik file ZIP model.
+The public Streamlit app is deployed from branch `main`, with `app.py` as its entry point.
 
-## Satu kali unggah model (Windows)
+## Architecture naming
 
-### Persiapan
-Install:
-- Git for Windows: https://git-scm.com/download/win
-- Git LFS: https://git-lfs.com/
+VECAS is the name of the application. The model names remain:
+- SeismicNet (CNN 1D)
+- VOISS-Net (CNN 2D)
+- Seismic-VOISS-Net Multimodal CNN
 
-Pastikan file seismic_deployment_artifacts.zip tersedia di Downloads.
+## Streamlit Community Cloud settings
 
-### Jalankan perintah ini di PowerShell
+- Repository: `Jfkevin/voiss-volcanic-earthquake-classifier`
+- Branch: `main`
+- Main file path: `app.py`
+- Python version: `3.12`
 
-Salin seluruh blok berikut dan jalankan:
+## Model input contract
 
-```powershell
-git lfs install
-$env:GIT_LFS_SKIP_SMUDGE = "1"
-git clone https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier.git
-Remove-Item Env:GIT_LFS_SKIP_SMUDGE
-cd voiss-volcanic-earthquake-classifier
-Set-ExecutionPolicy -Scope Process Bypass
-.\PUSH_MODELS_TO_GITHUB.ps1 "$env:USERPROFILE\Downloads\seismic_deployment_artifacts.zip"
-```
+- Sampling rate after preprocessing: 100 Hz.
+- One inference segment: 60 seconds / 6,000 samples.
+- Waveform input: `(6000, 1)`.
+- Spectrogram input: `(96, 60, 1)`.
+- Supported formats: CSV, TXT, WAV, MiniSEED, H5, HDF5.
+- Signals longer than 60 seconds can be segmented; shorter signals are rejected.
+- Waveform amplitude is not normalized automatically; its scale must be consistent with the training data.
 
-Jika nama/path ZIP berbeda, ganti bagian terakhir dengan lokasi sebenarnya.
+## Researcher profile photo
 
-**Mengapa GIT_LFS_SKIP_SMUDGE diperlukan?** Repository saat ini sudah berisi pointer model LFS, tetapi objek biner model baru akan diunggah oleh script. Variabel itu mencegah Git mencoba mengambil model sebelum objek tersedia.
+The About page reads an optional `profile_photo_base64` value from Streamlit Community Cloud Secrets. This keeps the photo out of the public GitHub repository. Because the photo is displayed on the public About page, visitors can still view it.
 
-Script akan:
-1. Mengekstrak tiga model dari ZIP ke artifacts/.
-2. Memastikan ketiga model terdaftar pada Git LFS.
-3. Mengunggah objek biner melalui Git LFS ke repository.
-4. Menampilkan pesan sukses jika unggahan selesai.
+## Notes
 
-Jangan upload ZIP model ke repository. Yang diunggah adalah tiga file .keras sebagai objek LFS.
-
-## Deploy ke Streamlit Community Cloud
-
-Setelah script model menampilkan pesan sukses:
-
-1. Buka https://share.streamlit.io/ dan login dengan GitHub.
-2. Klik Create app.
-3. Pilih repository Jfkevin/voiss-volcanic-earthquake-classifier.
-4. Branch: main.
-5. Main file path: app.py.
-6. Pada Advanced settings pilih Python 3.12.
-7. Klik Deploy dan pantau build logs.
-
-## Kontrak input model
-
-- Sampling rate setelah preprocessing: 100 Hz.
-- Satu segmen inferensi: 60 detik / 6.000 sampel.
-- Waveform: (6000, 1).
-- Spectrogram: (96, 60, 1).
-- Format: CSV, TXT, WAV, MiniSEED, H5, HDF5.
-- Rekaman lebih dari 60 detik dapat dipilih segmennya; rekaman lebih pendek ditolak.
-- Amplitudo waveform tidak dinormalisasi otomatis; skalanya harus konsisten dengan data training.
-
-Prediction History pada versi demo bersifat sementara per sesi browser. Skor Softmax belum dibuktikan terkalibrasi. VOISS adalah prototipe penelitian akademik, bukan sistem peringatan dini operasional.
+Prediction History is temporary and scoped to the current browser session. Softmax values are displayed as model scores/confidence and have not been established as calibrated probabilities. VECAS is an academic research and portfolio prototype, not an operational volcano early-warning system.
