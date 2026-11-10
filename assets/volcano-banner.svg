@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 420">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#102643"/><stop offset=".52" stop-color="#285b86"/><stop offset="1" stop-color="#10233e"/></linearGradient>
+ <linearGradient id="peak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#607b91"/><stop offset="1" stop-color="#172c43"/></linearGradient>
+ <linearGradient id="lava" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd6a2"/><stop offset="1" stop-color="#f07536"/></linearGradient>
+ <radialGradient id="glow"><stop offset="0" stop-color="#ffca8e" stop-opacity=".7"/><stop offset="1" stop-color="#ffca8e" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1600" height="420" fill="url(#sky)"/>
+<circle cx="1310" cy="96" r="230" fill="url(#glow)"/>
+<g fill="#d8e5ef" opacity=".20">
+ <ellipse cx="1160" cy="100" rx="150" ry="34"/><ellipse cx="1270" cy="76" rx="170" ry="42"/>
+ <ellipse cx="1410" cy="128" rx="180" ry="38"/><ellipse cx="1030" cy="142" rx="120" ry="30"/>
+</g>
+<g fill="#c6d6e3" opacity=".16">
+ <ellipse cx="1310" cy="35" rx="170" ry="50"/><ellipse cx="1465" cy="62" rx="130" ry="37"/>
+</g>
+<path d="M640 420 L860 235 L1010 305 L1220 72 L1330 190 L1440 110 L1600 275 L1600 420Z" fill="#223b53"/>
+<path d="M780 420 L1000 276 L1125 350 L1285 110 L1390 220 L1515 154 L1600 260 L1600 420Z" fill="url(#peak)"/>
+<path d="M1220 72 L1190 126 L1238 112 L1268 154 L1305 131 L1330 190 L1285 110Z" fill="#e9f0f5" opacity=".90"/>
+<path d="M1285 110 L1266 156 L1305 131 L1330 190 L1355 168 L1390 220Z" fill="#a9bdcb" opacity=".8"/>
+<path d="M1260 176 Q1230 128 1270 80 Q1310 38 1347 67 Q1380 17 1435 60 Q1485 100 1444 144 Q1406 180 1365 165 Q1314 207 1260 176Z" fill="#d4e0e9" opacity=".42"/>
+<path d="M1285 126 Q1320 95 1348 120 Q1370 89 1403 119 Q1430 144 1400 160 L1332 176Z" fill="#f6d1a8" opacity=".66"/>
+<path d="M0 355 Q220 285 410 344 T810 350 L810 420 H0Z" fill="#0b1d33" opacity=".65"/>
+<path d="M0 390 Q240 320 430 382 T830 390 L830 420 H0Z" fill="#0b1d33"/>
+<g stroke="#d8e6f2" stroke-width="2" opacity=".35" fill="none">
+ <path d="M910 365 Q1040 330 1130 370"/><path d="M1030 395 Q1200 340 1325 385"/>
+</g>
+</svg>
