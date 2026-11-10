@@ -426,13 +426,13 @@ def render_result_cards(results):
 def dashboard():
     page_header(
         "Volcanic Earthquake Classification",
-        "SeismicNet (CNN 1D)  |  VOISS-Net (CNN 2D)  |  Seismic-VOISS-Net Multimodal CNN"
+        "Intelligent Seismic Analysis for Volcanic Earthquake Classification"
     )
     banner = asset_data_uri("volcano-banner.svg")
     bg = f'background-image:linear-gradient(90deg,rgba(250,252,255,.98) 0%,rgba(246,250,255,.91) 47%,rgba(236,245,254,.10) 100%),url("{banner}");' if banner else 'background:linear-gradient(110deg,#fff,#d9eafb);'
     st.markdown(
         f'<div class="hero-card" style="{bg}"><div class="hero-copy">'
-        f'<div class="hero-kicker">Research-based intelligent seismic system</div>'
+        f'<div class="hero-kicker">Intelligent Seismic Analysis for Volcanic Earthquake Classification</div>'
         f'<div class="hero-title">VECAS</div>'
         f'<div class="hero-subtitle">Volcanic Earthquake Classification and Analysis System</div>'
         f'<div class="hero-text">Sistem klasifikasi gempa vulkanik berbasis deep learning yang menggabungkan analisis waveform, spektrogram, dan pendekatan multimodal untuk mengidentifikasi empat jenis kejadian seismik.</div>'
@@ -869,7 +869,7 @@ def documentation_page():
     with toc:
         st.markdown(
             '<div class="doc-toc"><div style="font-size:17px;font-weight:800;color:#153b64;margin:3px 5px 10px">▤ Daftar Isi</div>'
-            '<a href="#about-voiss">1. Tentang VECAS</a>'
+            '<a href="#about-vecas">1. Tentang VECAS</a>'
             '<a href="#architecture">2. Arsitektur Model</a>'
             '<a href="#seismicnet" style="padding-left:22px">• 2.1 SeismicNet (CNN 1D)</a>'
             '<a href="#voissnet" style="padding-left:22px">• 2.2 VOISS-Net (CNN 2D)</a>'
@@ -881,8 +881,8 @@ def documentation_page():
         )
     with content:
         st.markdown(
-            '<div class="doc-section" id="about-voiss"><h3>1. Tentang VECAS</h3>'
-            '<p style="font-size:13px;color:#4d647e;line-height:1.65">VOISS (Volcanic Earthquake Classification System) adalah aplikasi demonstrasi penelitian untuk klasifikasi gempa vulkanik menggunakan tiga arsitektur Convolutional Neural Network (CNN). Sistem mengolah sinyal seismik dalam bentuk waveform dan spektrogram, kemudian menghasilkan prediksi ke dalam empat kategori: Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).</p></div>',
+            '<div class="doc-section" id="about-vecas"><h3>1. Tentang VECAS</h3>'
+            '<p style="font-size:13px;color:#4d647e;line-height:1.65">VECAS (Volcanic Earthquake Classification and Analysis System) adalah aplikasi demonstrasi penelitian untuk klasifikasi gempa vulkanik menggunakan tiga arsitektur Convolutional Neural Network (CNN). Sistem mengolah sinyal seismik dalam bentuk waveform dan spektrogram, kemudian menghasilkan prediksi ke dalam empat kategori: Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).</p></div>',
             unsafe_allow_html=True
         )
         st.markdown(
