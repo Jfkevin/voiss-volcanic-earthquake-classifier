@@ -87,7 +87,19 @@ def page_header(title: str, subtitle: str = ""):
     )
 
 def model_status():
-    missing = [fn for fn in MODEL_FILES.values() if not (ARTIFACTS/fn).is_file()]
+    missing = []
+    for fn in MODEL_FILES.values():
+        path = ARTIFACTS / fn
+        if not path.is_file():
+            missing.append(fn + " (file belum tersedia)")
+            continue
+        # GitHub stores a small LFS pointer in Git; the real model must be fetched by Git LFS.
+        with path.open("rb") as handle:
+            header = handle.read(200)
+        if header.startswith(b"version https://git-lfs.github.com/spec/v1"):
+            missing.append(fn + " (Git LFS object belum diunduh)")
+        elif path.stat().st_size < 1024:
+            missing.append(fn + " (ukuran file tidak wajar)")
     return missing
 
 @st.cache_resource(show_spinner="Memuat model AI...", max_entries=1)
