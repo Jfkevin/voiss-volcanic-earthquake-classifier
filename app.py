@@ -159,16 +159,30 @@ def asset_data_uri(filename: str) -> str:
     return f"data:{mime};base64,{encoded}"
 
 
-def page_header(title: str, subtitle: str = ""):
+@st.fragment(run_every="1s")
+def _live_page_header(title: str, subtitle: str = ""):
+    # This fragment refreshes only the header clock every second.
+    # It does not rerun model inference or the rest of the page.
     banner = asset_data_uri("volcano-banner.svg")
-    style = f'background-image:linear-gradient(90deg,rgba(10,30,54,.95) 0%,rgba(15,47,80,.80) 52%,rgba(15,47,80,.20) 100%),url("{banner}");' if banner else 'background:linear-gradient(100deg,#10243f,#1d4f80);'
+    style = (
+        f'background-image:linear-gradient(90deg,rgba(10,30,54,.95) 0%,'
+        f'rgba(15,47,80,.80) 52%,rgba(15,47,80,.20) 100%),url("{banner}");'
+        if banner else 'background:linear-gradient(100deg,#10243f,#1d4f80);'
+    )
+    current_time = datetime.now(ZoneInfo("Asia/Jakarta"))
+    date_text = current_time.strftime("%d %b %Y")
+    time_text = current_time.strftime("%H:%M:%S WIB")
     st.markdown(
         f'<div class="voiss-header" style="{style}">'
         f'<div class="voiss-header-inner"><div><h1>VOISS: {html.escape(title)}</h1>'
         f'<p>{html.escape(subtitle)}</p></div>'
-        f'<div class="voiss-time">{now_wib()}</div></div></div>',
+        f'<div class="voiss-time"><div>{date_text}</div><div>{time_text}</div></div></div></div>',
         unsafe_allow_html=True
     )
+
+
+def page_header(title: str, subtitle: str = ""):
+    _live_page_header(title, subtitle)
 
 
 def model_status():
