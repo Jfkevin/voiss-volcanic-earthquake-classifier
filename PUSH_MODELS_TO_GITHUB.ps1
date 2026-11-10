@@ -42,9 +42,12 @@ try {
         }
     }
 
-    # Upload actual binary LFS objects referenced by main. Pointer files are already in the repository.
-    git lfs push origin main
-    if ($LASTEXITCODE -ne 0) { throw "Upload objek Git LFS gagal. Periksa autentikasi GitHub dan kuota LFS." }
+    # Verify local model objects, then force-upload every LFS object reachable from main.
+    git lfs fsck --objects
+    if ($LASTEXITCODE -ne 0) { throw "Pemeriksaan objek LFS lokal gagal." }
+
+    git lfs push --all origin main
+    if ($LASTEXITCODE -ne 0) { throw "Upload seluruh objek Git LFS gagal. Periksa autentikasi GitHub dan kuota LFS." }
 
     if (git status --porcelain) {
         git commit -m "Configure Git LFS for VOISS model artifacts"
