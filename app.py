@@ -688,7 +688,300 @@ def history_page():
         display["Confidence"] = display["Confidence"].map(lambda value: f"{value*100:.2f}%")
     st.dataframe(display, use_container_width=True, hide_index=True)
     if not df.empty:
-        st.download_button("↓ Export CSV", df.to_csv(index=False).encode("utf-8-sig"), "voiss_prediction_history.c# Sidebar navigation
+        st.download_button("↓ Export CSV", df.to_csv(index=False).encode("utf-8-sig"), "voiss_prediction_history.csv", "text/csv")
+    st.markdown("### Detail Prediksi")
+    for record in hist:
+        with st.expander(f'{record["run_at"]} · {record["file_name"]} · {record["mode"]}'):
+            render_result_cards(record["results"])
+            if record["agreement"].get("available"):
+                st.write(record["agreement"]["message"])
+    st.caption("Riwayat tersimpan sementara pada sesi browser ini.")
+
+
+def get_profile_photo():
+    # Keep the photo out of public GitHub: read it from Streamlit Cloud Secrets.
+    try:
+        encoded = st.secrets.get("profile_photo_base64", "")
+        if encoded:
+            raw = base64.b64decode(str(encoded).strip())
+            return io.BytesIO(raw)
+    except Exception:
+        pass
+    local_photo = ASSETS / "profile.jpg"
+    return str(local_photo) if local_photo.exists() else None
+
+
+def about_page():
+    page_header("About the Researcher", "Research background · Machine learning · Volcanic seismic classification")
+    photo = get_profile_photo()
+
+    st.markdown('<div class="section-heading">Meet the Researcher</div>', unsafe_allow_html=True)
+    left, right = st.columns([1, 2.25], gap="large")
+    with left:
+        if photo is not None:
+            st.image(photo, use_container_width=True)
+        else:
+            st.markdown(
+                '<div class="profile-placeholder"><div style="text-align:center"><div style="font-size:60px;font-weight:850">FK</div>'
+                '<div style="font-size:12px;font-weight:700">Researcher Portrait</div></div></div>',
+                unsafe_allow_html=True
+            )
+    with right:
+        st.markdown(
+            '<div class="profile-hero"><div class="hero-kicker">Researcher & Developer</div>'
+            '<div class="profile-name">Farrelius Kevin</div>'
+            '<div class="profile-role">Informatics Graduate · Data Science · Machine Learning · Deep Learning</div>'
+            '<div class="profile-bio">Saya memiliki ketertarikan pada pemanfaatan data science dan artificial intelligence untuk mengolah data kompleks menjadi informasi yang lebih mudah dipahami. Melalui VOISS, saya mengembangkan prototipe klasifikasi gempa vulkanik dengan mengeksplorasi pendekatan CNN 1D, CNN 2D, dan multimodal learning.</div>'
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Python</span>'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">TensorFlow</span>'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Deep Learning</span>'
+            '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Streamlit</span>'
+            '</div></div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown('<div class="section-heading">About the VOISS Project</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="voiss-panel"><h3 style="color:#173c63;margin:0 0 8px">From Seismic Signals to Intelligent Classification</h3>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.65">VOISS (Volcanic Earthquake Classification System) merupakan prototipe aplikasi berbasis web yang membawa eksperimen penelitian ke dalam pengalaman interaktif. Sistem ini memproses rekaman seismik melalui waveform dan representasi spektrogram, kemudian membandingkan tiga pendekatan CNN untuk mengenali karakteristik kejadian gempa vulkanik.</p>'
+        '<p style="color:#4a627d;font-size:13px;line-height:1.65">Pengembangan VOISS bertujuan menjembatani proses eksperimen machine learning dengan demonstrasi yang dapat dicoba oleh pengguna, sehingga alur input data, transformasi sinyal, dan hasil klasifikasi dapat diamati dalam satu aplikasi.</p></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="section-heading">Three Model Approaches</div>', unsafe_allow_html=True)
+    model_cards = [
+        ("01", "SeismicNet", "CNN 1D · Waveform", "Mempelajari pola temporal langsung dari urutan amplitudo sinyal seismik.", "#dceeff", "#2376bd"),
+        ("02", "VOISS-Net", "CNN 2D · Spectrogram", "Menganalisis pola waktu-frekuensi dari representasi spektrogram hasil STFT.", "#eee8ff", "#7956b6"),
+        ("03", "Seismic-VOISS-Net", "Multimodal CNN", "Menggabungkan fitur waveform dan spektrogram melalui feature fusion.", "#e2f6e9", "#26845a"),
+    ]
+    cols = st.columns(3)
+    for col, (num, name, tag, desc, bg, accent) in zip(cols, model_cards):
+        with col:
+            st.markdown(
+                f'<div class="about-highlight" style="border-top:4px solid {accent}">'
+                f'<div style="font-size:11px;color:{accent};font-weight:800">{num} · {tag}</div>'
+                f'<h4>{name}</h4><p>{desc}</p></div>',
+                unsafe_allow_html=True
+            )
+
+    st.markdown('<div class="section-heading">Research Snapshot</div>', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Dataset", "Llaima, Chile")
+    c2.metric("Event Classes", "4")
+    c3.metric("Sampling Rate", "100 Hz")
+    c4.metric("Input Window", "60 seconds")
+
+    st.markdown(
+        '<div class="voiss-panel"><b style="color:#173c63">Classification Labels</b>'
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">'
+        + "".join([f'<span style="background:{COLORS[k]}18;border:1px solid {COLORS[k]}55;color:{COLORS[k]};border-radius:8px;padding:8px 13px;font-size:12px;font-weight:800">{k} · {CLASS_NAMES[k]}</span>' for k in CODES])
+        + '</div></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="section-heading">Research & Technology</div>', unsafe_allow_html=True)
+    left, right = st.columns(2)
+    with left:
+        st.markdown(
+            '<div class="about-highlight"><h4>Research Focus</h4><p>Comparative CNN architectures, waveform analysis, time-frequency representation, multimodal feature fusion, dan explainable AI untuk interpretasi model.</p></div>',
+            unsafe_allow_html=True
+        )
+    with right:
+        st.markdown(
+            '<div class="about-highlight"><h4>Technology Stack</h4><p>Python · TensorFlow / Keras · NumPy · SciPy · Pandas · Plotly · Streamlit · h5py · ObsPy</p></div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown('<div class="section-heading">Explore the Project</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="voiss-panel"><p style="color:#4a627d;font-size:13px">Jelajahi halaman Documentation untuk memahami arsitektur ketiga model, alur preprocessing, serta cara menggunakan aplikasi VOISS. Source code aplikasi tersedia pada repository publik berikut.</p>'
+        '<a href="https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier" target="_blank" style="display:inline-block;background:#1768b5;color:white!important;text-decoration:none;padding:9px 15px;border-radius:8px;font-weight:700;font-size:12px">⌘ View GitHub Repository ↗</a></div>',
+        unsafe_allow_html=True
+    )
+    st.caption("VOISS is an academic research and portfolio prototype.")
+
+
+def flow_step(title, detail="", tone="blue"):
+    return (
+        f'<div class="flow-step {tone}"><b>{html.escape(title)}</b>'
+        f'<small>{html.escape(detail)}</small></div>'
+    )
+
+
+def pipeline_html(steps, tone="blue"):
+    pieces = []
+    for index, (title, detail) in enumerate(steps):
+        pieces.append(flow_step(title, detail, tone))
+        if index < len(steps) - 1:
+            pieces.append('<div class="flow-arrow">→</div>')
+    return '<div class="flow-scroll"><div class="flow-row">' + "".join(pieces) + '</div></div>'
+
+
+def documentation_page():
+    page_header("Documentation", "Panduan penggunaan, data & preprocessing, serta dokumentasi arsitektur model VOISS.")
+    toc, content = st.columns([0.25, 0.75], gap="medium")
+    with toc:
+        st.markdown(
+            '<div class="doc-toc"><div style="font-size:17px;font-weight:800;color:#153b64;margin:3px 5px 10px">▤ Daftar Isi</div>'
+            '<a href="#about-voiss">1. Tentang VOISS</a>'
+            '<a href="#architecture">2. Arsitektur Model</a>'
+            '<a href="#seismicnet" style="padding-left:22px">• 2.1 SeismicNet (CNN 1D)</a>'
+            '<a href="#voissnet" style="padding-left:22px">• 2.2 VOISS-Net (CNN 2D)</a>'
+            '<a href="#multimodal" style="padding-left:22px">• 2.3 Seismic-VOISS-Net Multimodal CNN</a>'
+            '<a href="#labels">3. Label Klasifikasi</a>'
+            '<a href="#preprocessing">4. Data & Preprocessing</a>'
+            '<a href="#usage">5. Cara Penggunaan</a></div>',
+            unsafe_allow_html=True
+        )
+    with content:
+        st.markdown(
+            '<div class="doc-section" id="about-voiss"><h3>1. Tentang VOISS</h3>'
+            '<p style="font-size:13px;color:#4d647e;line-height:1.65">VOISS (Volcanic Earthquake Classification System) adalah aplikasi demonstrasi penelitian untuk klasifikasi gempa vulkanik menggunakan tiga arsitektur Convolutional Neural Network (CNN). Sistem mengolah sinyal seismik dalam bentuk waveform dan spektrogram, kemudian menghasilkan prediksi ke dalam empat kategori: Long Period (LP), Tectonic (TC), Tremor (TR), dan Volcano-Tectonic (VT).</p></div>',
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            '<div class="doc-section" id="architecture"><h3>2. Arsitektur Model</h3>'
+            '<p style="font-size:13px;color:#4d647e;line-height:1.6">VOISS mengimplementasikan dua model unimodal dan satu model multimodal. SeismicNet menerima waveform, VOISS-Net menerima spektrogram, sedangkan Seismic-VOISS-Net Multimodal CNN menggabungkan representasi dari kedua cabang.</p></div>',
+            unsafe_allow_html=True
+        )
+
+        steps1 = [
+            ("Input Waveform", "6000 × 1"),
+            ("Conv1D · 32", "kernel 64 · stride 2"),
+            ("MaxPool1D", "pool 4 · dropout .15"),
+            ("Conv1D · 64", "kernel 32 · stride 2"),
+            ("MaxPool1D", "pool 4 · dropout .35"),
+            ("Conv1D · 128", "kernel 16 · stride 2"),
+            ("MaxPool1D", "pool 4 · stride 4"),
+            ("Conv1D · 256", "kernel 8 · stride 2"),
+            ("Conv1D · 1401", "kernel 16 · stride 2"),
+            ("Flatten", "vektor fitur"),
+            ("Dense · 1500", "ReLU"),
+            ("Dropout", "rate 0.75"),
+            ("Dense · 4", "Softmax"),
+        ]
+        st.markdown(
+            '<div class="architecture-card" id="seismicnet"><div class="architecture-band blue">〽️ 2.1 SeismicNet (CNN 1D)</div>'
+            '<div class="architecture-body"><div class="architecture-description">SeismicNet merupakan model CNN 1D yang memproses sinyal seismik dalam bentuk waveform (deret waktu). Arsitektur ini dirancang untuk mengekstraksi pola temporal dari perubahan amplitudo sinyal.</div>'
+            + pipeline_html(steps1, "blue")
+            + '<div style="font-size:12px;color:#45617d"><b>Input:</b> (6000, 1) · <b>Output:</b> 4 kelas Softmax · <b>Total parameters:</b> 12.513.181</div></div></div>',
+            unsafe_allow_html=True
+        )
+
+        steps2 = [
+            ("Input Spectrogram", "96 × 60 × 1"),
+            ("Conv2D · 32", "kernel 3 × 3"),
+            ("MaxPool2D", "pool 3 × 3"),
+            ("Conv2D · 64", "kernel 3 × 3"),
+            ("MaxPool2D", "pool 3 × 3"),
+            ("Conv2D · 128", "kernel 3 × 3"),
+            ("MaxPool2D", "pool 3 × 3"),
+            ("Flatten", "vektor fitur"),
+            ("Dropout", "rate 0.2"),
+            ("Dense · 128", "ReLU"),
+            ("Dropout", "rate 0.5"),
+            ("Dense · 64", "ReLU"),
+            ("Dense · 4", "Softmax"),
+        ]
+        st.markdown(
+            '<div class="architecture-card" id="voissnet"><div class="architecture-band purple">▧ 2.2 VOISS-Net (CNN 2D)</div>'
+            '<div class="architecture-body"><div class="architecture-description">VOISS-Net merupakan model CNN 2D yang memproses spektrogram hasil Short-Time Fourier Transform (STFT). Model mengekstraksi pola spektral dan temporal secara simultan melalui operasi konvolusi dua dimensi.</div>'
+            + pipeline_html(steps2, "purple")
+            + '<div style="font-size:12px;color:#5d4b82"><b>Input:</b> (96, 60, 1) · <b>Output:</b> 4 kelas Softmax · <b>Total parameters:</b> 199.620</div></div></div>',
+            unsafe_allow_html=True
+        )
+
+        wave_steps = [
+            ("Input Waveform", "6000 × 1"),
+            ("Conv1D stack", "32 · 64 · 128 · 256 · 1401"),
+            ("Pooling", "MaxPool1D blocks"),
+            ("Flatten", "vektor waveform"),
+            ("Dense · 1500", "ReLU · Dropout .75"),
+        ]
+        spec_steps = [
+            ("Input Spectrogram", "96 × 60 × 1"),
+            ("Conv2D stack", "32 · 64 · 128"),
+            ("Pooling", "MaxPool2D blocks"),
+            ("Flatten", "vektor spektrogram"),
+            ("Dense layers", "128 → 64"),
+        ]
+        fusion_steps = [
+            ("Concatenate", "gabungkan fitur"),
+            ("Dense · 256", "ReLU"),
+            ("Dropout", "rate 0.5"),
+            ("Dense · 4", "Softmax"),
+        ]
+        st.markdown(
+            '<div class="architecture-card" id="multimodal"><div class="architecture-band green">⑂ 2.3 Seismic-VOISS-Net Multimodal CNN</div>'
+            '<div class="architecture-body"><div class="architecture-description">Model multimodal ini memiliki dua cabang pemrosesan. Cabang pertama menggunakan SeismicNet untuk waveform, sedangkan cabang kedua menggunakan VOISS-Net untuk spektrogram. Vektor fitur dari kedua cabang digabungkan melalui feature fusion sebelum lapisan klasifikasi akhir.</div>'
+            '<div style="background:#eff7ff;border:1px dashed #9dc7ed;border-radius:10px;padding:10px 12px;margin-top:9px"><b style="font-size:12px;color:#1b5b95">Cabang 1 — SeismicNet (CNN 1D)</b>'
+            + pipeline_html(wave_steps, "blue")
+            + '</div><div style="background:#fff3f5;border:1px dashed #e8aeb8;border-radius:10px;padding:10px 12px;margin-top:9px"><b style="font-size:12px;color:#9b4654">Cabang 2 — VOISS-Net (CNN 2D)</b>'
+            + pipeline_html(spec_steps, "pink")
+            + '</div><div style="background:#effaf3;border:1px dashed #9ed8b5;border-radius:10px;padding:10px 12px;margin-top:9px"><b style="font-size:12px;color:#28764b">Feature Fusion & Classification Head</b>'
+            + pipeline_html(fusion_steps, "green")
+            + '</div><div style="font-size:12px;color:#356b4d;margin-top:8px"><b>Input:</b> waveform (6000, 1) + spectrogram (96, 60, 1) · <b>Total parameters:</b> 13.108.205</div></div></div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown('<div class="doc-section"><h3>Komponen & Konfigurasi Utama</h3>', unsafe_allow_html=True)
+        config = pd.DataFrame([
+            ["Jenis input", "Waveform (1D)", "Spectrogram (2D)", "Waveform + Spectrogram"],
+            ["Input tanpa batch", "(6000, 1)", "(96, 60, 1)", "[(6000, 1), (96, 60, 1)]"],
+            ["Jumlah parameter", "12.513.181", "199.620", "13.108.205"],
+            ["Optimizer", "Adam", "Adam", "Adam"],
+            ["Learning rate", "1 × 10⁻⁴", "1 × 10⁻⁴", "1 × 10⁻⁴"],
+            ["Loss function", "Categorical Crossentropy", "Categorical Crossentropy", "Categorical Crossentropy"],
+            ["Batch size", "32", "32", "32"],
+        ], columns=["Komponen", "SeismicNet", "VOISS-Net", "Seismic-VOISS-Net"])
+        st.dataframe(config, use_container_width=True, hide_index=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div class="doc-section" id="labels"><h3>3. Label Klasifikasi</h3>'
+            '<p style="color:#536a83;font-size:13px">Ketiga model menghasilkan skor untuk empat kelas kejadian seismik vulkanik berikut.</p>',
+            unsafe_allow_html=True
+        )
+        cols = st.columns(4)
+        for col, code in zip(cols, CODES):
+            with col:
+                st.markdown(
+                    f'<div class="class-chip" style="--chip-color:{COLORS[code]}"><div class="class-chip-code">{code}</div><div class="class-chip-name">{CLASS_NAMES[code]}</div></div>',
+                    unsafe_allow_html=True
+                )
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div class="doc-section" id="preprocessing"><h3>4. Data & Preprocessing</h3>'
+            '<p style="font-size:13px;color:#4d647e;line-height:1.6">Satu input inferensi dipersiapkan menjadi waveform sepanjang 60 detik pada sampling rate 100 Hz. Dari waveform yang sama, sistem membentuk spektrogram menggunakan urutan preprocessing berikut:</p>'
+            '<ol style="color:#425b75;font-size:13px;line-height:1.8">'
+            '<li>Validasi waveform satu dimensi dengan 6.000 sampel.</li>'
+            '<li>Mean removal untuk mengurangi komponen rata-rata sinyal.</li>'
+            '<li>Tukey window dengan alpha 0,1.</li>'
+            '<li>STFT menggunakan Hann window, nperseg 1000, dan noverlap 900.</li>'
+            '<li>Konversi magnitudo menjadi desibel: 20 log10(|Zxx| + 1e-10).</li>'
+            '<li>Pemotongan frekuensi 0,5–10 Hz dan pengambilan 60 kolom waktu pertama.</li>'
+            '<li>Normalisasi Min-Max per spektrogram ke rentang [0, 1].</li></ol>'
+            '<div style="background:#f2f7fd;border-radius:9px;padding:10px 12px;color:#244c73;font-size:12px"><b>Format input model:</b> Waveform (6000, 1) · Spectrogram (96, 60, 1) · Multimodal menggunakan keduanya dari event yang sama.</div></div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<div class="doc-section" id="usage"><h3>5. Cara Penggunaan</h3>'
+            '<ol style="color:#425b75;font-size:13px;line-height:1.8">'
+            '<li>Buka halaman <b>Classification</b> dan unggah satu file seismik.</li>'
+            '<li>Untuk CSV/TXT/HDF5, tentukan sampling rate dan channel/dataset apabila diperlukan.</li>'
+            '<li>Pilih SeismicNet, VOISS-Net, Seismic-VOISS-Net Multimodal CNN, atau Compare All Models.</li>'
+            '<li>Pastikan rekaman menyediakan segmen minimal 60 detik, lalu tekan <b>Run Classification</b>.</li>'
+            '<li>Amati waveform, spektrogram, hasil prediksi, class probability, dan Model Agreement apabila lebih dari satu model dijalankan.</li></ol>'
+            '<p style="font-size:12px;color:#6b7d91">Format berkas yang diterima: CSV, TXT, WAV, MiniSEED, H5, dan HDF5.</p></div>',
+            unsafe_allow_html=True
+        )
+
+
+# Sidebar navigation
+
 st.session_state.setdefault("active_page", "Dashboard")
 page_icons = {
     "Dashboard": "⌂",
