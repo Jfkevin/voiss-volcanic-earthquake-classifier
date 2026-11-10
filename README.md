@@ -24,6 +24,7 @@ The three model binaries are large (about 296 MiB total); two are larger than Gi
 Install [Git for Windows](https://git-scm.com/download/win) and [Git LFS](https://git-lfs.com/), then open PowerShell and run:
 
 ```powershell
+git lfs install
 $env:GIT_LFS_SKIP_SMUDGE = "1"
 git clone https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier.git
 Remove-Item Env:GIT_LFS_SKIP_SMUDGE
