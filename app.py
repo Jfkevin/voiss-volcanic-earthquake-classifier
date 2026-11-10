@@ -730,7 +730,7 @@ def about_page():
         st.markdown(
             '<div class="profile-hero"><div class="hero-kicker">Researcher & Developer</div>'
             '<div class="profile-name">Farrelius Kevin</div>'
-            '<div class="profile-role">Informatics Graduate · Data Science · Machine Learning · Deep Learning</div>'
+            '<div class="profile-role">S1 Informatika · Universitas Multimedia Nusantara · Data Science & AI</div>'
             '<div class="profile-bio">Saya memiliki ketertarikan pada pemanfaatan data science dan artificial intelligence untuk mengolah data kompleks menjadi informasi yang lebih mudah dipahami. Melalui VOISS, saya mengembangkan prototipe klasifikasi gempa vulkanik dengan mengeksplorasi pendekatan CNN 1D, CNN 2D, dan multimodal learning.</div>'
             '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">'
             '<span style="background:#e4f0fc;color:#1b5d99;border-radius:20px;padding:6px 10px;font-size:11px;font-weight:700">Python</span>'
@@ -882,6 +882,7 @@ def documentation_page():
             ("Dense · 128", "ReLU"),
             ("Dropout", "rate 0.5"),
             ("Dense · 64", "ReLU"),
+            ("Dropout", "rate 0.5"),
             ("Dense · 4", "Softmax"),
         ]
         st.markdown(
