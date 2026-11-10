@@ -23,6 +23,7 @@ Pastikan file seismic_deployment_artifacts.zip tersedia di Downloads.
 Salin seluruh blok berikut dan jalankan:
 
 ```powershell
+git lfs install
 $env:GIT_LFS_SKIP_SMUDGE = "1"
 git clone https://github.com/Jfkevin/voiss-volcanic-earthquake-classifier.git
 Remove-Item Env:GIT_LFS_SKIP_SMUDGE
