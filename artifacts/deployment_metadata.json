@@ -1,0 +1,65 @@
+{
+  "project": "Volcanic Earthquake Classification",
+  "model_files": {
+    "cnn1d": "SeismicNet_final.keras",
+    "cnn2d": "VOISSNet_final.keras",
+    "multimodal": "SeismicNet_VOISSNet_Multimodal_final.keras"
+  },
+  "classes": [
+    "LP",
+    "TC",
+    "TR",
+    "VT"
+  ],
+  "label_to_index": {
+    "LP": 0,
+    "TC": 1,
+    "TR": 2,
+    "VT": 3
+  },
+  "sampling_rate_hz": 100,
+  "waveform": {
+    "expected_samples": 6000,
+    "input_shape_without_batch": [
+      6000,
+      1
+    ],
+    "dtype": "float32",
+    "additional_normalization": "none; use input waveform amplitude scale consistent with training dataset"
+  },
+  "spectrogram_preprocessing": {
+    "method": "scipy.signal.stft",
+    "sampling_rate_hz": 100,
+    "mean_removal": true,
+    "taper_window": "tukey",
+    "tukey_alpha": 0.1,
+    "window": "hann",
+    "nperseg": 1000,
+    "noverlap": 900,
+    "db_formula": "20 * log10(abs(Zxx) + 1e-10)",
+    "frequency_crop_hz_inclusive": [
+      0.5,
+      10
+    ],
+    "time_columns": "first 60 columns",
+    "normalization": "per-spectrogram Min-Max to [0,1]",
+    "input_shape_without_batch": [
+      96,
+      60,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "cross_validation": {
+    "method": "StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42
+  },
+  "notes": [
+    "Final models are retrained using all available labeled data.",
+    "Reported research metrics are out-of-fold estimates from 5-fold CV.",
+    "No external independent test set was supplied.",
+    "Multimodal inference requires waveform and spectrogram from the same event."
+  ]
+}
